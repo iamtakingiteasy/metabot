@@ -6,7 +6,9 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/iamtakingiteasy/metabot/bot/impl"
+	"github.com/iamtakingiteasy/metabot/bot"
+	_ "github.com/iamtakingiteasy/metabot/commands"
+	_ "github.com/iamtakingiteasy/metabot/events"
 )
 
 func main() {
@@ -18,7 +20,7 @@ func main() {
 		log.Fatalln(pref + "filename.yaml required")
 	}
 
-	ctx := impl.NewContext(os.Args[1])
+	ctx := bot.NewContext(os.Args[1])
 
 	err := ctx.LoadConfig()
 	if err != nil {

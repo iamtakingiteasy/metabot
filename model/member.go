@@ -3,11 +3,12 @@ package model
 import (
 	"time"
 
+	"github.com/iamtakingiteasy/metabot/api"
+
 	"github.com/iamtakingiteasy/metabot/model/tmpl"
 	"github.com/lib/pq"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/iamtakingiteasy/metabot/bot"
 )
 
 type Member struct {
@@ -44,7 +45,7 @@ var (
 	)
 )
 
-func QueryMembersLastByGuildDiscordId(ctx bot.Context, guildDiscordId string) ([]*Member, error) {
+func QueryMembersLastByGuildDiscordId(ctx api.Context, guildDiscordId string) ([]*Member, error) {
 	var members []*Member
 	rows, err := ctx.Database().NamedQuery(queryMembersLastByGuildDiscordId, &Member{GuildDiscordId: guildDiscordId})
 	if err != nil {
@@ -61,7 +62,7 @@ func QueryMembersLastByGuildDiscordId(ctx bot.Context, guildDiscordId string) ([
 	return members, nil
 }
 
-func QueryMembersLastByGuildUserDiscordId(ctx bot.Context, guildDiscordId, userDiscordId string) (*Member, error) {
+func QueryMembersLastByGuildUserDiscordId(ctx api.Context, guildDiscordId, userDiscordId string) (*Member, error) {
 	m := &Member{GuildDiscordId: guildDiscordId, UserDiscordId: userDiscordId}
 	rows, err := ctx.Database().NamedQuery(queryMembersLastByGuildUserDiscordId, m)
 	if err != nil {
@@ -77,7 +78,7 @@ func QueryMembersLastByGuildUserDiscordId(ctx bot.Context, guildDiscordId, userD
 	return nil, ErrNoRows
 }
 
-func QueryMembersRevisionsByGuildUserDiscordId(ctx bot.Context, guildDiscordId, userDiscordId string) ([]*Member, error) {
+func QueryMembersRevisionsByGuildUserDiscordId(ctx api.Context, guildDiscordId, userDiscordId string) ([]*Member, error) {
 	var members []*Member
 	rows, err := ctx.Database().NamedQuery(queryMembersRevisionsByGuildUserDiscordId, &Member{GuildDiscordId: guildDiscordId, UserDiscordId: userDiscordId})
 	if err != nil {
@@ -94,7 +95,7 @@ func QueryMembersRevisionsByGuildUserDiscordId(ctx bot.Context, guildDiscordId, 
 	return members, nil
 }
 
-func InsertMembersRevision(ctx bot.Context, member *discordgo.Member) error {
+func InsertMembersRevision(ctx api.Context, member *discordgo.Member) error {
 	joined, err := member.JoinedAt.Parse()
 	if err != nil {
 		return err
@@ -121,7 +122,7 @@ func InsertMembersRevision(ctx bot.Context, member *discordgo.Member) error {
 	return nil
 }
 
-func DeleteMembersByGuildUserDiscordId(ctx bot.Context, guildDiscordId, userDiscordId string) error {
+func DeleteMembersByGuildUserDiscordId(ctx api.Context, guildDiscordId, userDiscordId string) error {
 	_, err := ctx.Database().NamedQuery(deleteMembersByGuildUserDiscordId, &Member{GuildDiscordId: guildDiscordId, UserDiscordId: userDiscordId})
 	return err
 }

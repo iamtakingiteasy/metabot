@@ -3,12 +3,13 @@ package model
 import (
 	"time"
 
+	"github.com/iamtakingiteasy/metabot/api"
+
 	"github.com/lib/pq"
 
 	"github.com/iamtakingiteasy/metabot/model/tmpl"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/iamtakingiteasy/metabot/bot"
 )
 
 type GuildVoiceStatus struct {
@@ -28,7 +29,7 @@ var (
 	)
 )
 
-func InsertGuildsVoiceStatusRevision(ctx bot.Context, state *discordgo.VoiceState) error {
+func InsertGuildsVoiceStatusRevision(ctx api.Context, state *discordgo.VoiceState) error {
 	_, err := ctx.Database().NamedQuery(insertGuildsVoiceStatusRevision, &GuildVoiceStatus{
 		GuildDiscordId:   state.GuildID,
 		ChannelDiscordId: state.ChannelID,

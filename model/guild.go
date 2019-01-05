@@ -6,13 +6,13 @@ import (
 	"log"
 	"time"
 
+	"github.com/iamtakingiteasy/metabot/api"
+
 	"github.com/lib/pq"
 
 	"github.com/iamtakingiteasy/metabot/model/tmpl"
 
 	"github.com/bwmarrin/discordgo"
-
-	"github.com/iamtakingiteasy/metabot/bot"
 )
 
 type Guild struct {
@@ -45,7 +45,7 @@ var (
 	)
 )
 
-func QueryGuildsLastAll(ctx bot.Context) ([]*Guild, error) {
+func QueryGuildsLastAll(ctx api.Context) ([]*Guild, error) {
 	var guilds []*Guild
 	rows, err := ctx.Database().NamedQuery(queryGuildsLastAll, &Guild{})
 	if err != nil {
@@ -62,7 +62,7 @@ func QueryGuildsLastAll(ctx bot.Context) ([]*Guild, error) {
 	return guilds, nil
 }
 
-func QueryGuildsLastByDiscordId(ctx bot.Context, discordId string) (*Guild, error) {
+func QueryGuildsLastByDiscordId(ctx api.Context, discordId string) (*Guild, error) {
 	g := &Guild{DiscordId: discordId}
 	rows, err := ctx.Database().NamedQuery(queryGuildsLastByGuildDiscordId, g)
 	if err != nil {
@@ -78,7 +78,7 @@ func QueryGuildsLastByDiscordId(ctx bot.Context, discordId string) (*Guild, erro
 	return nil, ErrNoRows
 }
 
-func QueryGuildsRevisionsByDiscordId(ctx bot.Context, discordId string) ([]*Guild, error) {
+func QueryGuildsRevisionsByDiscordId(ctx api.Context, discordId string) ([]*Guild, error) {
 	var guilds []*Guild
 	rows, err := ctx.Database().NamedQuery(queryGuildsRevisionsByGuildDiscordId, &Guild{DiscordId: discordId})
 	if err != nil {
@@ -95,7 +95,7 @@ func QueryGuildsRevisionsByDiscordId(ctx bot.Context, discordId string) ([]*Guil
 	return guilds, nil
 }
 
-func InsertGuildsRevision(ctx bot.Context, guild *discordgo.Guild) error {
+func InsertGuildsRevision(ctx api.Context, guild *discordgo.Guild) error {
 	var icondata, splashdata bytes.Buffer
 
 	if img, err := ctx.DiscordSession().GuildIcon(guild.ID); err == nil {
@@ -150,7 +150,7 @@ func InsertGuildsRevision(ctx bot.Context, guild *discordgo.Guild) error {
 	return nil
 }
 
-func DeleteGuildsByDiscordId(ctx bot.Context, discordId string) error {
+func DeleteGuildsByDiscordId(ctx api.Context, discordId string) error {
 	_, err := ctx.Database().NamedQuery(deleteGuildsByGuildDiscordId, &Guild{DiscordId: discordId})
 	return err
 }

@@ -3,11 +3,11 @@ package model
 import (
 	"time"
 
+	"github.com/iamtakingiteasy/metabot/api"
+
 	"github.com/lib/pq"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/iamtakingiteasy/metabot/bot"
-
 	"github.com/iamtakingiteasy/metabot/model/tmpl"
 )
 
@@ -146,7 +146,7 @@ var (
 	)
 )
 
-func QueryEmbedsFieldsByEmbed(ctx bot.Context, embed *Embed) (*Embed, error) {
+func QueryEmbedsFieldsByEmbed(ctx api.Context, embed *Embed) (*Embed, error) {
 	var fields []*EmbedField
 	rows, err := ctx.Database().NamedQuery(queryEmbedsFieldsByEmbedId, &EmbedField{EmbedId: embed.Id})
 	if err != nil {
@@ -164,7 +164,7 @@ func QueryEmbedsFieldsByEmbed(ctx bot.Context, embed *Embed) (*Embed, error) {
 	return embed, nil
 }
 
-func QueryEmbedsByMessage(ctx bot.Context, message *Message) (*Message, error) {
+func QueryEmbedsByMessage(ctx api.Context, message *Message) (*Message, error) {
 	var embeds []*Embed
 	rows, err := ctx.Database().NamedQuery(queryEmbedsByMessageId, &Embed{MessageId: message.Id})
 	if err != nil {
@@ -186,7 +186,7 @@ func QueryEmbedsByMessage(ctx bot.Context, message *Message) (*Message, error) {
 	return message, nil
 }
 
-func QueryMessagesLastByGuildChannelDiscordId(ctx bot.Context, guildDiscordId, channelDiscordId string) ([]*Message, error) {
+func QueryMessagesLastByGuildChannelDiscordId(ctx api.Context, guildDiscordId, channelDiscordId string) ([]*Message, error) {
 	var messages []*Message
 	rows, err := ctx.Database().NamedQuery(queryMessagesLastByGuildChannelDiscordId, &Message{GuildDiscordId: guildDiscordId, ChannelDiscordId: channelDiscordId})
 	if err != nil {
@@ -207,7 +207,7 @@ func QueryMessagesLastByGuildChannelDiscordId(ctx bot.Context, guildDiscordId, c
 	return messages, nil
 }
 
-func QueryMessagesLastByGuildChannelMessageDiscordId(ctx bot.Context, guildDiscordId, channelDiscordId, messageDiscordId string) (*Message, error) {
+func QueryMessagesLastByGuildChannelMessageDiscordId(ctx api.Context, guildDiscordId, channelDiscordId, messageDiscordId string) (*Message, error) {
 	m := &Message{GuildDiscordId: guildDiscordId, ChannelDiscordId: channelDiscordId, DiscordId: messageDiscordId}
 	rows, err := ctx.Database().NamedQuery(queryMessagesLastByGuildChannelMessageDiscordId, m)
 	if err != nil {
@@ -223,7 +223,7 @@ func QueryMessagesLastByGuildChannelMessageDiscordId(ctx bot.Context, guildDisco
 	return nil, ErrNoRows
 }
 
-func QueryMessagesRevisionsByGuildChannelMessageDiscordId(ctx bot.Context, guildDiscordId, channelDiscordId, messageDiscordId string) ([]*Message, error) {
+func QueryMessagesRevisionsByGuildChannelMessageDiscordId(ctx api.Context, guildDiscordId, channelDiscordId, messageDiscordId string) ([]*Message, error) {
 	var messages []*Message
 	rows, err := ctx.Database().NamedQuery(queryMessagesRevisionsByGuildChannelMessageDiscordId, &Message{GuildDiscordId: guildDiscordId, ChannelDiscordId: channelDiscordId, DiscordId: messageDiscordId})
 	if err != nil {
@@ -244,10 +244,14 @@ func QueryMessagesRevisionsByGuildChannelMessageDiscordId(ctx bot.Context, guild
 	return messages, nil
 }
 
-func InsertMessagesRevision(ctx bot.Context, message *discordgo.Message) error {
+func InsertMessagesRevision(ctx api.Context, message *discordgo.Message) error {
+	user := message.Author
+	if user == nil {
+		user = ctx.DiscordSession().State.User
+	}
 	m := &Message{
 		GuildDiscordId:   message.GuildID,
-		UserDiscordId:    message.Author.ID,
+		UserDiscordId:    user.ID,
 		DiscordId:        message.ID,
 		Type:             int(message.Type),
 		WebhookDiscordId: message.WebhookID,
@@ -386,7 +390,7 @@ func InsertMessagesRevision(ctx bot.Context, message *discordgo.Message) error {
 	return nil
 }
 
-func DeleteMessagesByGuildChannelMessageDiscordId(ctx bot.Context, guildDiscordId, channelDiscordId, messageDiscordId string) error {
+func DeleteMessagesByGuildChannelMessageDiscordId(ctx api.Context, guildDiscordId, channelDiscordId, messageDiscordId string) error {
 	_, err := ctx.Database().NamedQuery(deleteMessagesByGuildChannelMessageDiscordId, &Message{GuildDiscordId: guildDiscordId, ChannelDiscordId: channelDiscordId, DiscordId: messageDiscordId})
 	return err
 }

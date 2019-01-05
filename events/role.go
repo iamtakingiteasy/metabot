@@ -1,12 +1,13 @@
-package impl
+package events
 
 import (
 	"github.com/bwmarrin/discordgo"
+	"github.com/iamtakingiteasy/metabot/bot"
 	"github.com/iamtakingiteasy/metabot/model"
 )
 
 func init() {
-	AddGlobalEventHandler(func(ctx *Context, raw interface{}) error {
+	bot.AddGlobalEventHandler(func(ctx *bot.Context, raw interface{}) error {
 		switch evt := raw.(type) {
 		case *discordgo.GuildRoleCreate:
 			return model.InsertRolesRevision(ctx, evt.GuildID, evt.Role)

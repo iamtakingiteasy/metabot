@@ -3,12 +3,12 @@ package model
 import (
 	"time"
 
-	"github.com/lib/pq"
+	"github.com/iamtakingiteasy/metabot/api"
 
 	"github.com/iamtakingiteasy/metabot/model/tmpl"
+	"github.com/lib/pq"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/iamtakingiteasy/metabot/bot"
 )
 
 type Channel struct {
@@ -57,7 +57,7 @@ var (
 	)
 )
 
-func QueryChannelsLastByGuildDiscordId(ctx bot.Context, guildDiscordId string) ([]*Channel, error) {
+func QueryChannelsLastByGuildDiscordId(ctx api.Context, guildDiscordId string) ([]*Channel, error) {
 	var channels []*Channel
 	rows, err := ctx.Database().NamedQuery(queryChannelsLastByGuildDiscordId, &Channel{GuildDiscordId: guildDiscordId})
 	if err != nil {
@@ -74,7 +74,7 @@ func QueryChannelsLastByGuildDiscordId(ctx bot.Context, guildDiscordId string) (
 	return channels, nil
 }
 
-func QueryChannelsLastByGuildChannelDiscordId(ctx bot.Context, guildDiscordId, channelDiscordId string) (*Channel, error) {
+func QueryChannelsLastByGuildChannelDiscordId(ctx api.Context, guildDiscordId, channelDiscordId string) (*Channel, error) {
 	c := &Channel{GuildDiscordId: guildDiscordId, DiscordId: channelDiscordId}
 	rows, err := ctx.Database().NamedQuery(queryChannelsLastByGuildChannelDiscordId, c)
 	if err != nil {
@@ -90,7 +90,7 @@ func QueryChannelsLastByGuildChannelDiscordId(ctx bot.Context, guildDiscordId, c
 	return nil, ErrNoRows
 }
 
-func QueryChannelsRevisionsByGuildChannelDiscordId(ctx bot.Context, guildDiscordId, channelDiscordId string) ([]*Channel, error) {
+func QueryChannelsRevisionsByGuildChannelDiscordId(ctx api.Context, guildDiscordId, channelDiscordId string) ([]*Channel, error) {
 	var channels []*Channel
 	rows, err := ctx.Database().NamedQuery(queryChannelsRevisionsByGuildChannelDiscordId, &Channel{GuildDiscordId: guildDiscordId, DiscordId: channelDiscordId})
 	if err != nil {
@@ -107,7 +107,7 @@ func QueryChannelsRevisionsByGuildChannelDiscordId(ctx bot.Context, guildDiscord
 	return channels, nil
 }
 
-func InsertChannelsRevision(ctx bot.Context, channel *discordgo.Channel) error {
+func InsertChannelsRevision(ctx api.Context, channel *discordgo.Channel) error {
 	_, err := ctx.Database().NamedQuery(insertChannelsRevision, &Channel{
 		DiscordId:       channel.ID,
 		GuildDiscordId:  channel.GuildID,
@@ -126,7 +126,7 @@ func InsertChannelsRevision(ctx bot.Context, channel *discordgo.Channel) error {
 	return nil
 }
 
-func DeleteChannelsByGuildChannelDiscordId(ctx bot.Context, guildDiscordId, channelDiscordId string) error {
+func DeleteChannelsByGuildChannelDiscordId(ctx api.Context, guildDiscordId, channelDiscordId string) error {
 	_, err := ctx.Database().NamedQuery(deleteChannelsByGuildChannelDiscordId, &Channel{GuildDiscordId: guildDiscordId, DiscordId: channelDiscordId})
 	return err
 }

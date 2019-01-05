@@ -3,12 +3,13 @@ package model
 import (
 	"time"
 
+	"github.com/iamtakingiteasy/metabot/api"
+
 	"github.com/lib/pq"
 
 	"github.com/iamtakingiteasy/metabot/model/tmpl"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/iamtakingiteasy/metabot/bot"
 )
 
 type Role struct {
@@ -51,7 +52,7 @@ var (
 	)
 )
 
-func QueryRolesLastByGuildDiscordId(ctx bot.Context, guildDiscordId string) ([]*Role, error) {
+func QueryRolesLastByGuildDiscordId(ctx api.Context, guildDiscordId string) ([]*Role, error) {
 	var roles []*Role
 	rows, err := ctx.Database().NamedQuery(queryRolesLastByGuildDiscordId, &Role{GuildDiscordId: guildDiscordId})
 	if err != nil {
@@ -68,7 +69,7 @@ func QueryRolesLastByGuildDiscordId(ctx bot.Context, guildDiscordId string) ([]*
 	return roles, nil
 }
 
-func QueryRolesLastByGuildRoleDiscordId(ctx bot.Context, guildDiscordId, roleDiscordId string) (*Role, error) {
+func QueryRolesLastByGuildRoleDiscordId(ctx api.Context, guildDiscordId, roleDiscordId string) (*Role, error) {
 	r := &Role{GuildDiscordId: guildDiscordId, DiscordId: roleDiscordId}
 	rows, err := ctx.Database().NamedQuery(queryRolesLastByGuildRoleDiscordId, r)
 	if err != nil {
@@ -84,7 +85,7 @@ func QueryRolesLastByGuildRoleDiscordId(ctx bot.Context, guildDiscordId, roleDis
 	return nil, ErrNoRows
 }
 
-func QueryRolesRevisionsByGuildRoleDiscordId(ctx bot.Context, guildDiscordId, roleDiscordId string) ([]*Role, error) {
+func QueryRolesRevisionsByGuildRoleDiscordId(ctx api.Context, guildDiscordId, roleDiscordId string) ([]*Role, error) {
 	var roles []*Role
 	rows, err := ctx.Database().NamedQuery(queryRolesRevisionsByGuildRoleDiscordId, &Role{GuildDiscordId: guildDiscordId, DiscordId: roleDiscordId})
 	if err != nil {
@@ -101,7 +102,7 @@ func QueryRolesRevisionsByGuildRoleDiscordId(ctx bot.Context, guildDiscordId, ro
 	return roles, nil
 }
 
-func InsertRolesRevision(ctx bot.Context, guildId string, role *discordgo.Role) error {
+func InsertRolesRevision(ctx api.Context, guildId string, role *discordgo.Role) error {
 	_, err := ctx.Database().NamedQuery(insertRolesRevision, &Role{
 		DiscordId:      role.ID,
 		GuildDiscordId: guildId,
@@ -113,7 +114,7 @@ func InsertRolesRevision(ctx bot.Context, guildId string, role *discordgo.Role) 
 	return err
 }
 
-func DeleteRolesByGuildRoleDiscordId(ctx bot.Context, guildDiscordId, roleDiscordId string) error {
+func DeleteRolesByGuildRoleDiscordId(ctx api.Context, guildDiscordId, roleDiscordId string) error {
 	_, err := ctx.Database().NamedQuery(deleteRolesByGuildRoleDiscordId, &Role{GuildDiscordId: guildDiscordId, DiscordId: roleDiscordId})
 	return err
 }

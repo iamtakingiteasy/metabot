@@ -6,12 +6,13 @@ import (
 	"log"
 	"time"
 
+	"github.com/iamtakingiteasy/metabot/api"
+
 	"github.com/lib/pq"
 
 	"github.com/iamtakingiteasy/metabot/model/tmpl"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/iamtakingiteasy/metabot/bot"
 )
 
 type User struct {
@@ -53,7 +54,7 @@ var (
 	)
 )
 
-func QueryUsersLastAll(ctx bot.Context) ([]*User, error) {
+func QueryUsersLastAll(ctx api.Context) ([]*User, error) {
 	var users []*User
 	rows, err := ctx.Database().NamedQuery(queryUsersLastAll, &User{})
 	if err != nil {
@@ -70,7 +71,7 @@ func QueryUsersLastAll(ctx bot.Context) ([]*User, error) {
 	return users, nil
 }
 
-func QueryUsersLastByUserDiscordId(ctx bot.Context, discordId string) (*User, error) {
+func QueryUsersLastByUserDiscordId(ctx api.Context, discordId string) (*User, error) {
 	u := &User{DiscordId: discordId}
 	rows, err := ctx.Database().NamedQuery(queryUsersLastByUserDiscordId, u)
 	if err != nil {
@@ -86,7 +87,7 @@ func QueryUsersLastByUserDiscordId(ctx bot.Context, discordId string) (*User, er
 	return nil, ErrNoRows
 }
 
-func QueryUsersRevisionsByUserDiscordId(ctx bot.Context, discordId string) ([]*User, error) {
+func QueryUsersRevisionsByUserDiscordId(ctx api.Context, discordId string) ([]*User, error) {
 	var users []*User
 	rows, err := ctx.Database().NamedQuery(queryUsersRevisionsByUserDiscordId, &User{DiscordId: discordId})
 	if err != nil {
@@ -103,7 +104,7 @@ func QueryUsersRevisionsByUserDiscordId(ctx bot.Context, discordId string) ([]*U
 	return users, nil
 }
 
-func InsertUsersRevision(ctx bot.Context, user *discordgo.User) error {
+func InsertUsersRevision(ctx api.Context, user *discordgo.User) error {
 	var avatardata bytes.Buffer
 
 	if img, err := ctx.DiscordSession().UserAvatar(user.ID); err == nil {
@@ -126,7 +127,7 @@ func InsertUsersRevision(ctx bot.Context, user *discordgo.User) error {
 	return err
 }
 
-func DeleteUsersByUserDiscordId(ctx bot.Context, discordId string) error {
+func DeleteUsersByUserDiscordId(ctx api.Context, discordId string) error {
 	_, err := ctx.Database().NamedQuery(deleteUsersByUserDiscordId, &User{DiscordId: discordId})
 	return err
 }

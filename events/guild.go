@@ -1,7 +1,9 @@
-package impl
+package events
 
 import (
 	"time"
+
+	"github.com/iamtakingiteasy/metabot/bot"
 
 	"github.com/iamtakingiteasy/metabot/model"
 
@@ -9,7 +11,7 @@ import (
 )
 
 func init() {
-	AddGlobalEventHandler(func(ctx *Context, raw interface{}) error {
+	bot.AddGlobalEventHandler(func(ctx *bot.Context, raw interface{}) error {
 		switch evt := raw.(type) {
 		case *discordgo.GuildCreate:
 			err := model.InsertGuildsRevision(ctx, evt.Guild)
@@ -19,10 +21,10 @@ func init() {
 			if _, ok := ctx.Configs[evt.Guild.ID]; !ok {
 				conf := &model.Config{
 					GuildDiscordId:   evt.Guild.ID,
-					Prefix:           "!",
-					ColorError:       0xff0000,
-					ColorWarn:        0xffff00,
-					ColorInfo:        0x0000ff,
+					Prefix:           "changeme!",
+					ColorError:       0xffaaaa,
+					ColorWarn:        0xffffaa,
+					ColorInfo:        0xaaaaff,
 					AutoremoveActive: true,
 					AutoremoveTime:   1 * time.Minute,
 					RestrictActive:   false,

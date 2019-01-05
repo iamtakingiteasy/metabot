@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"github.com/iamtakingiteasy/metabot/bot"
+	"github.com/iamtakingiteasy/metabot/api"
 )
 
 const (
@@ -197,7 +197,7 @@ delete from config_restrict_rules where config_restrict_rules_id = :config_restr
 `
 )
 
-func LoadConfigs(ctx bot.Context) ([]*Config, error) {
+func LoadConfigs(ctx api.Context) ([]*Config, error) {
 	var configs []*Config
 	rows, err := ctx.Database().NamedQuery(loadConfig, &Config{})
 	if err != nil {
@@ -222,12 +222,12 @@ func LoadConfigs(ctx bot.Context) ([]*Config, error) {
 	return configs, nil
 }
 
-func (conf *Config) Save(ctx bot.Context) error {
+func (conf *Config) Save(ctx api.Context) error {
 	_, err := ctx.Database().NamedQuery(saveConfig, conf)
 	return err
 }
 
-func (conf *Config) LoadAdmins(ctx bot.Context) error {
+func (conf *Config) LoadAdmins(ctx api.Context) error {
 	var admins []*ConfigAdmin
 	rows, err := ctx.Database().NamedQuery(listConfigAdminsByGuildDiscordId, &ConfigAdmin{GuildDiscordId: conf.GuildDiscordId})
 	if err != nil {
@@ -245,7 +245,7 @@ func (conf *Config) LoadAdmins(ctx bot.Context) error {
 	return nil
 }
 
-func (conf *Config) AddAdmin(ctx bot.Context, admin *ConfigAdmin) error {
+func (conf *Config) AddAdmin(ctx api.Context, admin *ConfigAdmin) error {
 	admin.GuildDiscordId = conf.GuildDiscordId
 	rows, err := ctx.Database().NamedQuery(insertConfigAdmins, admin)
 	if err != nil {
@@ -262,12 +262,12 @@ func (conf *Config) AddAdmin(ctx bot.Context, admin *ConfigAdmin) error {
 	return nil
 }
 
-func (admin *ConfigAdmin) Save(ctx bot.Context) error {
+func (admin *ConfigAdmin) Save(ctx api.Context) error {
 	_, err := ctx.Database().NamedQuery(updateConfigAdminsById, admin)
 	return err
 }
 
-func (conf *Config) DeleteAdminById(ctx bot.Context, adminId uint64) error {
+func (conf *Config) DeleteAdminById(ctx api.Context, adminId uint64) error {
 	_, err := ctx.Database().NamedQuery(deleteConfigAdminsById, &ConfigAdmin{Id: adminId})
 	if err != nil {
 		return err
@@ -281,7 +281,7 @@ func (conf *Config) DeleteAdminById(ctx bot.Context, adminId uint64) error {
 	return nil
 }
 
-func (conf *Config) LoadRestrictRules(ctx bot.Context) error {
+func (conf *Config) LoadRestrictRules(ctx api.Context) error {
 	var rules []*ConfigRestrictRule
 	rows, err := ctx.Database().NamedQuery(listConfigRestrictRulesByGuildDiscordId, &ConfigRestrictRule{GuildDiscordId: conf.GuildDiscordId})
 	if err != nil {
@@ -299,7 +299,7 @@ func (conf *Config) LoadRestrictRules(ctx bot.Context) error {
 	return nil
 }
 
-func (conf *Config) AddRestrictRule(ctx bot.Context, rule *ConfigRestrictRule) error {
+func (conf *Config) AddRestrictRule(ctx api.Context, rule *ConfigRestrictRule) error {
 	rule.GuildDiscordId = conf.GuildDiscordId
 	rows, err := ctx.Database().NamedQuery(insertConfigRestrictRules, rule)
 	if err != nil {
@@ -316,12 +316,12 @@ func (conf *Config) AddRestrictRule(ctx bot.Context, rule *ConfigRestrictRule) e
 	return nil
 }
 
-func (rule *ConfigRestrictRule) Save(ctx bot.Context) error {
+func (rule *ConfigRestrictRule) Save(ctx api.Context) error {
 	_, err := ctx.Database().NamedQuery(updateConfigRestrictRulesById, rule)
 	return err
 }
 
-func (conf *Config) DeleteRestrictRuleById(ctx bot.Context, ruleId uint64) error {
+func (conf *Config) DeleteRestrictRuleById(ctx api.Context, ruleId uint64) error {
 	_, err := ctx.Database().NamedQuery(deleteConfigRestrictRulesById, &ConfigRestrictRule{Id: ruleId})
 	if err != nil {
 		return err
